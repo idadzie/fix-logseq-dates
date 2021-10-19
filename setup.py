@@ -1,6 +1,6 @@
-from setuptools import setup
 import sys
 
+from setuptools import setup
 
 assert sys.version_info >= (3, 6), "fix-logseq-dates requires Python 3.6+"
 
@@ -24,6 +24,10 @@ setup(
     description="CLI tool to fix linked references for dates.",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
+    install_requires=[
+        "dateparser>=1.1.0",
+        "regex>=2021.10.8",
+    ],
     py_modules=["fix_logseq_dates"],
     entry_points={"console_scripts": ["fix-logseq-dates=fix_logseq_dates:main"]},
     classifiers=[
