@@ -43,8 +43,12 @@ def restore_file(path):
 
 def init_argparse():
     # TODO: Use Typer. ;D Moar dependencies. ¯\_(ツ)_/¯ Easier life?
+    formatter = lambda prog: argparse.ArgumentDefaultsHelpFormatter(
+        prog, max_help_position=52
+    )
     parser = argparse.ArgumentParser(
-        description="CLI tool to fix linked references for Logseq dates."
+        description="CLI tool to fix linked references for Logseq dates.",
+        formatter_class=formatter,
     )
     parser.add_argument(
         "-f",
