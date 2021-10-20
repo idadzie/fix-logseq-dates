@@ -37,8 +37,8 @@ def cleanup(path):
 
 def restore_file(path):
     possibly_broken = path.absolute()  # because FileInput...
-    backup = Path(f"{path.absolute()}.bak")
-    shutil.move(backup.absolute(), possibly_broken)
+    backup = Path(f"{path.absolute()}.bak").absolute()
+    shutil.move(backup, possibly_broken)
 
 
 def init_argparse():
@@ -54,11 +54,25 @@ def init_argparse():
         help="date format.",
     )
     parser.add_argument(
+        "-j",
+        type=str,
+        default="journals",
+        dest="journals_directory",
+        help="journals folder name.",
+    )
+    parser.add_argument(
+        "-p",
+        type=str,
+        default="pages",
+        dest="pages_directory",
+        help="pages folder name.",
+    )
+    parser.add_argument(
         "-d",
         type=str,
         default=None,
-        dest="directory",
-        help="absolute path to your local copy of your logseq graph.",
+        dest="graph_directory",
+        help="absolute path to your local Logseq graph.",
     )
     return parser
 
@@ -68,7 +82,7 @@ def main():
     parser = init_argparse()
     args = parser.parse_args()
 
-    logseq_directory = args.directory
+    logseq_directory = args.graph_directory
     if not logseq_directory:
         sys.exit(
             "Kindly provide the absolute path to your "
@@ -82,9 +96,7 @@ def main():
         sys.exit("Kindly provide a valid logseq directory.")
 
     for path in logseq_path.iterdir():
-        # TODO: What if not called journals & pages?
-        #      Should cater for this.
-        if path.name not in ("journals", "pages"):
+        if path.name not in (args.journals_directory, args.pages_directory):
             continue
 
         for path_ in path.iterdir():
