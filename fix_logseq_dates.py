@@ -15,8 +15,8 @@ def replace_line(line_, date_format="%B %d, %Y"):
     )
 
     try:
-        match = regex.findall(rgx, line_)[0]
-    except IndexError:
+        match = regex.findall(rgx, line_)[0].strip()
+    except (IndexError, AttributeError):
         return line_
 
     date_ = dateparser.parse(match)
