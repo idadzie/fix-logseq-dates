@@ -25,6 +25,7 @@ setup(
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     install_requires=[
+        "arrow>=1.2.0",
         "dateparser>=1.1.0",
         "regex>=2021.10.8",
     ],

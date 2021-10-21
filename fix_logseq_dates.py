@@ -4,6 +4,7 @@ import shutil
 import sys
 from pathlib import Path
 
+import arrow
 import dateparser
 import regex
 
@@ -30,7 +31,7 @@ def find_dates(line, any_date):
     return date_strings
 
 
-def replace_line(line, date_format="%B %d, %Y", any_date=False):
+def replace_line(line, date_format="MMMM DD, YYYY", any_date=False):
     date_strings = find_dates(line, any_date)
     if not any(date_strings):
         return line
@@ -38,7 +39,9 @@ def replace_line(line, date_format="%B %d, %Y", any_date=False):
     for each in date_strings:
         match = sanitize_match(each)
         date_ = dateparser.parse(match)
-        date_string = date_.strftime(date_format)
+        if not date_:
+            continue
+        date_string = arrow.get(date_).format(date_format)
         line = line.replace(match, date_string)
 
     return line
@@ -75,7 +78,7 @@ def init_argparse():
     parser.add_argument(
         "-f",
         type=str,
-        default="%B %d, %Y",
+        default="MMMM DD, YYYY",
         dest="format",
         help="date format.",
     )
