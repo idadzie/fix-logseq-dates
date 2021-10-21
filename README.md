@@ -71,6 +71,8 @@ optional arguments:
     fix-logseq-dates -f 'MMMM DD, YYYY' -d ~/path/to/knowledge-graph -j alt_journals -p alt_pages --any-date
     ```
 
+3. Open Logseq and re-index your graph.
+
 
 
 ## :bulb: Tip
