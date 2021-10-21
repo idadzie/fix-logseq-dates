@@ -9,35 +9,47 @@ import regex
 
 
 def sanitize_match(string):
-    return regex.sub(r"(\[\[|title[:]{,2}\s|\]\])", "", string.strip())
+    return string.strip()
 
 
-def replace_line(line_, date_format="%B %d, %Y", any_date=False):
-    pattern = (
-        r"((?:\[\[|title[:]{,2}\s)?(?:\d{,2}\s)?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|"
-        r"Sep|Oct|Nov|Dec)[a-z]*(?:-|\.|\s|,)\s?\d{,2}[a-z]*(?:-|,|\s)?\s?\d{2,4}?"
-        r"(?:\]\]|\s))"
-    )
-    if any_date:
-        pattern = (
-            r"((?:\d{,2}\s)?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|"
-            r"Sep|Oct|Nov|Dec)[a-z]*(?:-|\.|\s|,)\s?\d{,2}[a-z]*(?:-|,|\s)?\s?\d{2,4})"
+def find_dates(line, any_date):
+    matched_references = [line]  # Lazy much ;D.
+    if not any_date:
+        reference_pattern = r"(\[\[.*\]\]|title:.*)"
+        matched_references = regex.findall(reference_pattern, line)
+
+    date_strings = []
+    for reference in matched_references:
+        date_pattern = (
+            r"((?:\d{1,2}\s)?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|"
+            r"Nov|Dec)[a-z]*(?:-|\.|\s|,)\s?\d{1,2}[a-z]*(?:-|,|\s)?\s?\d{2,4})"
         )
+        matched_dates = regex.findall(date_pattern, reference)
+        for date in matched_dates:
+            date_strings.append(date)
+    return date_strings
 
-    try:
-        match = sanitize_match(regex.findall(pattern, line_)[0])
-    except (IndexError, AttributeError):
-        return line_
 
-    date_ = dateparser.parse(match)
-    date_string = date_.strftime(date_format)
-    return line_.replace(match, date_string)
+def replace_line(line, date_format="%B %d, %Y", any_date=False):
+    date_strings = find_dates(line, any_date)
+    if not any(date_strings):
+        return line
+
+    for each in date_strings:
+        match = sanitize_match(each)
+        date_ = dateparser.parse(match)
+        date_string = date_.strftime(date_format)
+        line = line.replace(match, date_string)
+
+    return line
 
 
 def modify_file(path, date_format, any_date):
     with fileinput.FileInput(f"{path.absolute()}", inplace=True, backup=".bak") as f:
         for line in f:
-            print(replace_line(line, date_format), end="")
+            print(
+                replace_line(line, date_format=date_format, any_date=any_date), end=""
+            )
 
 
 def cleanup(path):
