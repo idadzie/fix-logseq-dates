@@ -16,7 +16,7 @@ def get_long_description() -> str:
 
 setup(
     name="fix-logseq-dates",
-    version="2021.09.19",
+    version="2021.10.21",
     url="https://github.com/idadzie/fix-logseq-dates",
     license="MIT",
     author="Isaac Dadzie",
